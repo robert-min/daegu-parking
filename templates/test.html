@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    var jsonData = JSON.stringify('{{il_parking_list}}'.replace(/&#39;/g, "\""));
+    var illegal_data = JSON.parse(jsonData);
+
+    console.log(illegal_data);
+</script>
+
+</body>
+</html>

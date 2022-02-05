@@ -3,10 +3,9 @@ from db_model.mysql import PyMyDao
 
 app = Flask(__name__)
 
-@app.route('/html_test')
+@app.route('/index_html')
 def index_html():
-    ilList = PyMyDao().getIlParking()
-    return render_template('index.html', ilList=ilList)
+    return render_template('index.html')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port='8080')
+    app.run(host='0.0.0.0', port='8081')

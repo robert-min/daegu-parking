@@ -12,12 +12,12 @@ class PyMyDao:
         db_data = []
         cursor = MYSQL_CONN.cursor()
 
-        sql = "SELECT * FROM illegal"
+        sql = "SELECT * FROM illegal LIMIT 200"
         cursor.execute(sql)
 
         rows = cursor.fetchall()
         for row in rows:
-            temp = {'address':row[1], 'count':row[2], 'year':row[3], 'long':row[4], 'lat':row[5]}
+            temp = {'address':row[1], 'count':row[2], 'year':row[3], 'lat':row[4], 'lng':row[5]}
             db_data.append(temp)
 
         MYSQL_CONN.commit()
