@@ -2,12 +2,72 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>여러개 마커 표시하기</title>
+    <title>불법주정차 map</title>
     <script
             type="text/javascript"
             src="//code.jquery.com/jquery-3.6.0.min.js"
             integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
             crossorigin="anonymous"></script>
+    <style>
+        .overlaybox {
+            position: relative;
+            width: 360px;
+            height: 350px;
+            background: url('http://localhost/PycharmProjects/Deagu_parking/templates/img/overlay_bg.png') no-repeat;
+            padding: 12px 12px;
+        }
+
+        .overlaybox div, ul {
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .overlaybox li {
+            list-style: none;
+        }
+
+        .overlaybox .boxtitle {
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .overlaybox .first {
+            position: relative;
+            width: 230px;
+            height: 110px;
+            background: url('http://localhost/PycharmProjects/Deagu_parking/templates/img/nonparkingsite.png') no-repeat 50% 50%/ 100% 100%;
+            margin-bottom: 8px;
+        }
+
+        .overlaybox ul {
+            width: 247px;
+        }
+
+        .overlaybox li {
+            position: relative;
+            margin-bottom: 2px;
+            padding: 5px 20px;
+            color: #FFFFFF;
+            line-height: 1;
+        }
+
+        .overlaybox li span {
+            display: inline-block;
+        }
+
+        .overlaybox li .number {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .overlaybox li .title {
+            font-size: 13px;
+        }
+
+    </style>
 
 </head>
 <body>
@@ -17,7 +77,7 @@
 <script>
     var mapContainer = document.getElementById('map'), // 지도를 표시할 div
         mapOption = {
-            center: new kakao.maps.LatLng(35.9027534, 128.5867517), // 지도의 중심좌표
+            center: new kakao.maps.LatLng(35.907604, 128.572110), // 지도의 중심좌표
             level: 6 // 지도의 확대 레벨
         };
 
@@ -32,12 +92,12 @@
             success: function (positions) {
 
                 // 마커 이미지의 이미지 주소입니다
-                var imageSrc = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png";
+                var imageSrc = "http://localhost/PycharmProjects/Deagu_parking/templates/img/nonparking.png";
 
                 for (var i = 0; i < positions.length; i++) {
 
                     // 마커 이미지의 이미지 크기 입니다
-                    var imageSize = new kakao.maps.Size(24, 35);
+                    var imageSize = new kakao.maps.Size(18, 18);
 
                     // 마커 이미지를 생성합니다
                     var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
@@ -48,13 +108,54 @@
                     var marker = new kakao.maps.Marker({
                         map: map, // 마커를 표시할 지도
                         position: latlng, // 마커를 표시할 위치
-                        image: markerImage // 마커 이미지
+                        image: markerImage
                     });
+
+                    // var iwContent = '<div style="padding:5px; width:100%;">' + positions[i].address + "<br>" + positions[i].count + "</br>" + '</div>'; // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+                    var content = '<div class="overlaybox">' +
+                        '    <div class="boxtitle">' + positions[i].address + '</div>' +
+                        '    <div class="first">' +
+                        '    </div>' +
+                        '    <ul>' +
+                        '        <li class="up", align="right">' +
+                        '            <span class="number">' + positions[i].count + '</span>' +
+                        '            <span class="title">건</span>' +
+                        '        </li>' +
+                        '    </ul>' +
+                        '</div>';
+
+                    var customOverlay = new kakao.maps.CustomOverlay({
+                        position: latlng,
+                        content: content,
+                        xAnchor: 0.32,
+                        yAnchor: 0.58
+                    });
+
+                    // 마커에 mouseover 이벤트와 mouseout 이벤트를 등록합니다
+                    // 이벤트 리스너로는 클로저를 만들어 등록합니다
+                    // for문에서 클로저를 만들어 주지 않으면 마지막 마커에만 이벤트가 등록됩니다
+                    kakao.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, customOverlay));
+                    kakao.maps.event.addListener(marker, 'mouseout', makeOutListener(customOverlay));
+
                 }
+
+
             }
         });
     });
 
+    function makeOverListener(map, marker, customOverlay) {
+        return function () {
+            customOverlay.setMap(map, marker);
+        };
+    }
+
+    // 인포윈도우를 닫는 클로저를 만드는 함수입니다
+    function makeOutListener(customOverlay) {
+        return function () {
+            customOverlay.setMap(null);
+        };
+    }
 
 
 </script>
