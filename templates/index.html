@@ -9,11 +9,14 @@
             integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
             crossorigin="anonymous"></script>
     <style>
+        @import url("https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800,900&display=swap");
 
         /*reset*/
         * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            font-family: "paybooc-Light", sans-serif;
         }
 
         li {
@@ -28,7 +31,7 @@
         header {
             height: 75px;
             background-color: #FFFFFF;
-            border: 1px solid #253342;
+            border: 0px solid #253342;
             position: fixed;
             width: 100%;
             z-index: 9999;
@@ -42,30 +45,48 @@
             float: left;
         }
 
+
         .menu {
             float: right;
+            line-height: 75px;
         }
 
         .menu li {
             float: left;
+            line-height: 75px;
         }
 
-        .menu a {
-            line-height: 75px;
-            color: black;
-            padding: 0 15px;
-            display: block;
-        }
 
         .wrapper {
             width: 1200px;
             margin: 0 auto;
         }
 
-        .clearfix {
-            content: '';
-            display: block;
-            clear: both;
+        button {
+            margin-right: 10px;
+        }
+
+        .w-btn {
+            position: relative;
+            border: none;
+            display: inline-block;
+            padding: 15px 15px;
+            border-radius: 15px;
+            font-family: "paybooc-Light", sans-serif;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.25s;
+        }
+
+        .w-btn-red {
+            background-color: #ff5f2e;
+            color: #e1eef6;
+        }
+
+        .w-btn-green {
+            background-color: #77af9c;
+            color: #d7fff1;
         }
 
 
@@ -144,14 +165,21 @@
         <h1>불법주정차 민원 서비스</h1>
         <nav>
             <u1 class="menu">
-                <li><a href="">전체민원구역</a></li>
                 <li>
-                    <button onclick="showParking()">주차구역 보기</button>
+                    <button class="w-btn w-btn-red" type="button" onclick="showIllegalMarkers()">상습민원구역 보기</button>
                 </li>
                 <li>
-                    <button onclick="hideParking()">주차구역 숨기기</button>
+                    <button class="w-btn w-btn-red" type="button" onclick="setTotalIllegalMarkers()">전체민원구역 보기</button>
                 </li>
-                <li><a href="">신고하기</a></li>
+                <li>
+                    <button class="w-btn w-btn-red" type="button" onclick="hideIllegalMarkers()">민원구역 숨기기</button>
+                </li>
+                <li>
+                    <button class="w-btn w-btn-green" type="button" onclick="showParking()">주차구역 보기</button>
+                </li>
+                <li>
+                    <button class="w-btn w-btn-green" type="button" onclick="hideParking()">주차구역 숨기기</button>
+                </li>
             </u1>
         </nav>
     </div>
@@ -171,16 +199,24 @@
     var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
 
     $(function () {
+        setIllegalMarkers()
+    });
+
+    $(function () {
+        setParkingMarkers()
+    });
+
+    var illegal_markers = [];
+
+    function setIllegalMarkers() {
         console.log("illegal")
         $.ajax({
             type: 'post',
             dataType: 'json',
             url: 'http://localhost/PycharmProjects/Deagu_parking/templates/getNonParking.php',
             success: function (positions) {
-
                 // 마커 이미지의 이미지 주소입니다
                 var imageSrc = "http://localhost/PycharmProjects/Deagu_parking/templates/img/nonparking.png";
-
                 for (var i = 0; i < positions.length; i++) {
 
                     // 마커 이미지의 이미지 크기 입니다
@@ -197,6 +233,8 @@
                         position: latlng, // 마커를 표시할 위치
                         image: markerImage
                     });
+
+                    illegal_markers.push(marker);
 
                     // var iwContent = '<div style="padding:5px; width:100%;">' + positions[i].address + "<br>" + positions[i].count + "</br>" + '</div>'; // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
                     var content = '<div class="overlaybox">' +
@@ -223,100 +261,157 @@
                     // for문에서 클로저를 만들어 주지 않으면 마지막 마커에만 이벤트가 등록됩니다
                     kakao.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, customOverlay));
                     kakao.maps.event.addListener(marker, 'mouseout', makeOutListener(customOverlay));
-
+                    kakao.maps.event.addListener(map, 'click', makeOutListener(customOverlay));
                 }
-
-
             }
         });
-    });
 
-    $(function () {
+    }
+
+    function setTotalIllegalMarkers() {
+        console.log("Totalillegal")
+        $.ajax({
+            type: 'post',
+            dataType: 'json',
+            url: 'http://localhost/PycharmProjects/Deagu_parking/templates/getTotalNonParking.php',
+            success: function (positions) {
+                // 마커 이미지의 이미지 주소입니다
+                var imageSrc = "http://localhost/PycharmProjects/Deagu_parking/templates/img/nonparking.png";
+                for (var i = 0; i < positions.length; i++) {
+
+                    // 마커 이미지의 이미지 크기 입니다
+                    var imageSize = new kakao.maps.Size(18, 18);
+
+                    // 마커 이미지를 생성합니다
+                    var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
+
+                    var latlng = new kakao.maps.LatLng(positions[i].lat, positions[i].lng)
+
+                    // 마커를 생성합니다
+                    var marker = new kakao.maps.Marker({
+                        map: map, // 마커를 표시할 지도
+                        position: latlng, // 마커를 표시할 위치
+                        image: markerImage
+                    });
+
+                    illegal_markers.push(marker);
+
+                    // var iwContent = '<div style="padding:5px; width:100%;">' + positions[i].address + "<br>" + positions[i].count + "</br>" + '</div>'; // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+                    var content = '<div class="overlaybox">' +
+                        '    <div class="boxtitle">' + positions[i].address + '</div>' +
+                        '    <div class="first">' +
+                        '    </div>' +
+                        '    <ul>' +
+                        '        <li class="up", align="right">' +
+                        '            <span class="number">' + positions[i].count + '</span>' +
+                        '            <span class="title">건</span>' +
+                        '        </li>' +
+                        '    </ul>' +
+                        '</div>';
+
+                    var customOverlay = new kakao.maps.CustomOverlay({
+                        position: latlng,
+                        content: content,
+                        xAnchor: 0.32,
+                        yAnchor: 0.58
+                    });
+
+                    // 마커에 mouseover 이벤트와 mouseout 이벤트를 등록합니다
+                    // 이벤트 리스너로는 클로저를 만들어 등록합니다
+                    // for문에서 클로저를 만들어 주지 않으면 마지막 마커에만 이벤트가 등록됩니다
+                    kakao.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, customOverlay));
+                    kakao.maps.event.addListener(marker, 'mouseout', makeOutListener(customOverlay));
+                    kakao.maps.event.addListener(map, 'click', makeOutListener(customOverlay));
+                }
+            }
+        });
+
+    }
+
+    function showIllegalMarkers() {
+        hideIllegalMarkers();
+        setIllegalMarkers();
+    }
+
+    function hideIllegalMarkers() {
+        for (var i = 0; i < illegal_markers.length; i++) {
+            illegal_markers[i].setMap(null);
+        }
+    }
+
+
+    var parking_markers = []
+
+    function setParkingMarkers() {
         console.log("parking_site")
         $.ajax({
             type: 'post',
             dataType: 'json',
             url: 'http://localhost/PycharmProjects/Deagu_parking/templates/getParking.php',
             success: function (positions) {
-                setParkingMarkers(positions);
+                for (var i = 0; i < positions.length; i++) {
+
+                    // 마커 이미지의 이미지 주소입니다
+                    var imageSrc = "http://localhost/PycharmProjects/Deagu_parking/templates/img/parking.png";
+                    // 마커 이미지의 이미지 크기 입니다
+                    var imageSize = new kakao.maps.Size(18, 18);
+
+                    // 마커 이미지를 생성합니다
+                    var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
+
+                    var latlng = new kakao.maps.LatLng(positions[i].lat, positions[i].lng)
+
+                    // 마커를 생성합니다
+                    var marker = new kakao.maps.Marker({
+                        map: map, // 마커를 표시할 지도
+                        position: latlng, // 마커를 표시할 위치
+                        image: markerImage
+                    });
+
+                    parking_markers.push(marker);
+
+                    // var iwContent = '<div style="padding:5px; width:100%;">' + positions[i].address + "<br>" + positions[i].count + "</br>" + '</div>'; // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+                    var content = '<div class="overlaybox">' +
+                        '    <div class="boxtitle">' + positions[i].name + '</div>' +
+                        '    <div class="second">' +
+                        '    </div>' +
+                        '    <ul>' +
+                        '        <li class="up", align="right">' +
+                        '            <span class="number">' + positions[i].kind + '</span>' +
+                        '            <span class="title">' + "/ " + positions[i].fare + '</span>' +
+                        '        </li>' +
+                        '    </ul>' +
+                        '</div>';
+
+                    var customOverlay = new kakao.maps.CustomOverlay({
+                        position: latlng,
+                        content: content,
+                        xAnchor: 0.32,
+                        yAnchor: 0.58
+                    });
+                    // 마커에 mouseover 이벤트와 mouseout 이벤트를 등록합니다
+                    // 이벤트 리스너로는 클로저를 만들어 등록합니다
+                    // for문에서 클로저를 만들어 주지 않으면 마지막 마커에만 이벤트가 등록됩니다
+                    kakao.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, customOverlay));
+                    kakao.maps.event.addListener(marker, 'mouseout', makeOutListener(customOverlay));
+                    kakao.maps.event.addListener(map, 'click', makeOutListener(customOverlay));
+                }
+                ;
             }
         })
-    });
 
-    var markers = []
-
-    function setParkingMarkers(data) {
-
-
-        for (var i = 0; i < data.length; i++) {
-
-            // 마커 이미지의 이미지 주소입니다
-            var imageSrc = "http://localhost/PycharmProjects/Deagu_parking/templates/img/parking.png";
-            // 마커 이미지의 이미지 크기 입니다
-            var imageSize = new kakao.maps.Size(18, 18);
-
-            // 마커 이미지를 생성합니다
-            var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
-
-            var latlng = new kakao.maps.LatLng(data[i].lat, data[i].lng)
-
-            // 마커를 생성합니다
-            var marker = new kakao.maps.Marker({
-                map: map, // 마커를 표시할 지도
-                position: latlng, // 마커를 표시할 위치
-                image: markerImage
-            });
-
-            markers.push(marker);
-
-            // var iwContent = '<div style="padding:5px; width:100%;">' + positions[i].address + "<br>" + positions[i].count + "</br>" + '</div>'; // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
-            var content = '<div class="overlaybox">' +
-                '    <div class="boxtitle">' + data[i].name + '</div>' +
-                '    <div class="second">' +
-                '    </div>' +
-                '    <ul>' +
-                '        <li class="up", align="right">' +
-                '            <span class="number">' + data[i].kind + '</span>' +
-                '            <span class="title">' + "/ " + data[i].fare + '</span>' +
-                '        </li>' +
-                '    </ul>' +
-                '</div>';
-
-            var customOverlay = new kakao.maps.CustomOverlay({
-                position: latlng,
-                content: content,
-                xAnchor: 0.32,
-                yAnchor: 0.58
-            });
-            // 마커에 mouseover 이벤트와 mouseout 이벤트를 등록합니다
-            // 이벤트 리스너로는 클로저를 만들어 등록합니다
-            // for문에서 클로저를 만들어 주지 않으면 마지막 마커에만 이벤트가 등록됩니다
-            kakao.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, customOverlay));
-            kakao.maps.event.addListener(marker, 'mouseout', makeOutListener(customOverlay));
-        }
-        ;
     }
 
     // "마커 보이기" 버튼을 클릭하면 호출되어 배열에 추가된 마커를 지도에 표시하는 함수입니다
     function showParking() {
-        $(function () {
-            console.log("reshowparking")
-            $.ajax({
-                type: 'post',
-                dataType: 'json',
-                url: 'http://localhost/PycharmProjects/Deagu_parking/templates/getParking.php',
-                success: function (positions) {
-                    setParkingMarkers(positions);
-                }
-            })
-        });
+        setParkingMarkers()
     }
 
 
     // "마커 감추기" 버튼을 클릭하면 호출되어 배열에 추가된 마커를 지도에서 삭제하는 함수입니다
     function hideParking() {
-        for (var i = 0; i < markers.length; i++) {
-            markers[i].setMap(null);
+        for (var i = 0; i < parking_markers.length; i++) {
+            parking_markers[i].setMap(null);
         }
     }
 

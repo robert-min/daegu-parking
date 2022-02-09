@@ -5,7 +5,7 @@
 
     // 1. 데이터베이스에서 데이터를 가져옴
     $link = mysqli_connect("localhost", "root", "aksen5466!", "parking");
-    if ($result = mysqli_query($link, 'SELECT * FROM `illegal` WHERE count >= 100;', MYSQLI_USE_RESULT)) {
+    if ($result = mysqli_query($link, 'SELECT * FROM `illegal` WHERE count >= 2;', MYSQLI_USE_RESULT)) {
         // 2. 데이터베이스로부터 반환된 데이터를
         // 객체 형태로 가공함
         $o = array();
