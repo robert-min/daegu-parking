@@ -2,167 +2,19 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>불법주정차 map</title>
+    <title>불법주정차 통합 지도 서비스</title>
     <script
             type="text/javascript"
             src="//code.jquery.com/jquery-3.6.0.min.js"
             integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
             crossorigin="anonymous"></script>
-    <style>
-        @import url("https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800,900&display=swap");
+    <link rel="stylesheet", href="css/style.css">
 
-        /*reset*/
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "paybooc-Light", sans-serif;
-        }
-
-        li {
-            list-style: none;
-        }
-
-        a {
-            text-decoration: none;
-        }
-
-        /*header*/
-        header {
-            height: 75px;
-            background-color: #FFFFFF;
-            border: 0px solid #253342;
-            position: fixed;
-            width: 100%;
-            z-index: 9999;
-            top: 0;
-            left: 0;
-        }
-
-        h1 {
-            color: black;
-            line-height: 75px;
-            float: left;
-        }
-
-
-        .menu {
-            float: right;
-            line-height: 75px;
-        }
-
-        .menu li {
-            float: left;
-            line-height: 75px;
-        }
-
-
-        .wrapper {
-            width: 1200px;
-            margin: 0 auto;
-        }
-
-        button {
-            margin-right: 10px;
-        }
-
-        .w-btn {
-            position: relative;
-            border: none;
-            display: inline-block;
-            padding: 15px 15px;
-            border-radius: 15px;
-            font-family: "paybooc-Light", sans-serif;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            text-decoration: none;
-            font-weight: 600;
-            transition: 0.25s;
-        }
-
-        .w-btn-red {
-            background-color: #ff5f2e;
-            color: #e1eef6;
-        }
-
-        .w-btn-green {
-            background-color: #77af9c;
-            color: #d7fff1;
-        }
-
-
-        /*body*/
-        .overlaybox {
-            position: relative;
-            width: 360px;
-            height: 350px;
-            background: url('http://localhost/PycharmProjects/Deagu_parking/templates/img/overlay_bg.png') no-repeat;
-            padding: 12px 12px;
-        }
-
-        .overlaybox div, ul {
-            overflow: hidden;
-            margin: 0;
-            padding: 0;
-        }
-
-        .overlaybox li {
-            list-style: none;
-        }
-
-        .overlaybox .boxtitle {
-            color: #fff;
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .overlaybox .first {
-            position: relative;
-            width: 230px;
-            height: 110px;
-            background: url('http://localhost/PycharmProjects/Deagu_parking/templates/img/nonparkingsite.png') no-repeat 50% 50%/ 100% 100%;
-            margin-bottom: 8px;
-        }
-
-        .overlaybox .second {
-            position: relative;
-            width: 230px;
-            height: 110px;
-            background: url('http://localhost/PycharmProjects/Deagu_parking/templates/img/parkingsite.png') no-repeat 50% 50%/ 100% 100%;
-            margin-bottom: 8px;
-        }
-
-        .overlaybox ul {
-            width: 247px;
-        }
-
-        .overlaybox li {
-            position: relative;
-            margin-bottom: 2px;
-            padding: 5px 20px;
-            color: #FFFFFF;
-            line-height: 1;
-        }
-
-        .overlaybox li span {
-            display: inline-block;
-        }
-
-        .overlaybox li .number {
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .overlaybox li .title {
-            font-size: 13px;
-        }
-
-    </style>
 
 </head>
 <header>
     <div class="wrapper">
-        <h1>불법주정차 민원 서비스</h1>
+        <h1>불법주정차 통합 지도 서비스</h1>
         <nav>
             <u1 class="menu">
                 <li>
