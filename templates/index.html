@@ -8,7 +8,8 @@
             src="//code.jquery.com/jquery-3.6.0.min.js"
             integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
             crossorigin="anonymous"></script>
-    <link rel="stylesheet", href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="http://localhost/PycharmProjects/Deagu_parking/templates/css/style.css">
+
 
 
 </head>
@@ -56,6 +57,10 @@
 
     $(function () {
         setParkingMarkers()
+    });
+
+    $(function () {
+        setSafeArea()
     });
 
     var illegal_markers = [];
@@ -191,6 +196,36 @@
         }
     }
 
+    var safe_area = []
+
+    function setSafeArea() {
+        console.log("safe_area")
+        $.ajax({
+            type: 'post',
+            dataType: 'json',
+            url: 'http://localhost/PycharmProjects/Deagu_parking/templates/getSafeArea.php',
+            success: function (positions) {
+                for (var i = 0; i < positions.length; i++) {
+                    // 지도에 표시할 원을 생성합니다
+                    var circle = new kakao.maps.Circle({
+                        center: new kakao.maps.LatLng(positions[i].lat, positions[i].lng),  // 원의 중심좌표 입니다
+                        radius: 150, // 미터 단위의 원의 반지름입니다
+                        strokeWeight: 0.5, // 선의 두께입니다
+                        strokeColor: '#FAAC58', // 선의 색깔입니다
+                        strokeOpacity: 1, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+                        strokeStyle: 'solid', // 선의 스타일 입니다
+                        fillColor: '#F78181', // 채우기 색깔입니다
+                        fillOpacity: 0.7  // 채우기 불투명도 입니다
+                    });
+                    safe_area.push(circle)
+
+                    // 지도에 원을 표시합니다
+                    circle.setMap(map);
+                }
+
+            }
+        });
+    }
 
     var parking_markers = []
 
